@@ -39,7 +39,7 @@ struct Camera
         Vec camera_right = cross(look_dir, world_up);
         Vec camera_up = cross(look_dir, camera_right);
         double Lx, Ly;
-        Lx = tan(fov / 2.0);
+        Lx = tan(fov);
         Ly = (1 / aspect_ratio) * Lx;
         w = position + look_dir;
         u = (camera_right * Lx / 2.0);
