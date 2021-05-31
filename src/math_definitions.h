@@ -149,12 +149,26 @@ struct SphereGeometry
         double b = 2 * dot(ray.origin - center, ray.direction);
         double c = ((ray.origin - center).sqlen()) - (radius * radius);
         double d = (b * b) - (4 * a * c);
-        if (d > 0)
+        if (d < 0)
         {
-            double l = (-b - sqrt(d)) / (2 * a);
-            point = ray.origin + ray.direction * l;
+            return false;
         }
-        return (d >= 0);
+        double l1 = (-b - sqrt(d)) / (2 * a);
+        double l2 = (-b + sqrt(d)) / (2 * a);
+        if (l1 > M_EPSILON && l1 < l2)
+        {
+            point = ray.origin + ray.direction * l1;
+            return true;
+        }
+        else if (l2 > M_EPSILON)
+        {
+            point = ray.origin + ray.direction * l2;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 };
 
