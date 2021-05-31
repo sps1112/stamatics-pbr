@@ -8,11 +8,11 @@
 // Constants and conversions
 ///////////////////////////////////////////////////////////////////////////////
 
-#define M_PI 3.1415926535897932384626433832795
+#define PBR_PI 3.1415926535897932384626433832795
 #define M_INF 1e20
 #define M_EPSILON 1e-4
 
-#define DEG_TO_RAD(DEG) (DEG * M_PI / 180)
+#define DEG_TO_RAD(DEG) (DEG * PBR_PI / 180)
 
 ///////////////////////////////////////////////////////////////////////////////
 // Math types
@@ -24,7 +24,6 @@
 struct Vec
 {
     double x, y, z;
-
 
     Vec(double x_, double y_, double z_) : x(x_), y(y_), z(z_) {}
     Vec(double scalar = 0.0) : Vec(scalar, scalar, scalar) {}
@@ -41,7 +40,7 @@ struct Vec
 
     inline Vec operator*(double s) const
     {
-        return { x * s, y * s, z * s };
+        return {x * s, y * s, z * s};
     }
 
     inline Vec operator/(double s) const
@@ -49,38 +48,36 @@ struct Vec
         return *this * (1. / s);
     }
 
-    inline Vec operator+(const Vec& b) const
+    inline Vec operator+(const Vec &b) const
     {
         return {x + b.x, y + b.y, z + b.z};
     }
 
-    inline Vec operator-(const Vec& b) const
+    inline Vec operator-(const Vec &b) const
     {
         return *this + b * (-1.);
     }
-
 };
 
 /** Normalize the vector, return a unit vector in the same direction as the parameter. */
-inline Vec normalize(const Vec& v)
+inline Vec normalize(const Vec &v)
 {
     return v / v.len();
 }
 
 /** Calculate the dot product between vectors a and b. */
-inline double dot(const Vec& a, const Vec& b)
+inline double dot(const Vec &a, const Vec &b)
 {
     return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
 }
 
 /** Calculate the cross product between a and b. */
-inline Vec cross(const Vec& a, const Vec& b)
+inline Vec cross(const Vec &a, const Vec &b)
 {
-    return { 
+    return {
         (a.y * b.z) - (a.z * b.y),
         (a.z * b.x) - (a.x * b.z),
-        (a.x * b.y) - (a.y * b.x)
-    };
+        (a.x * b.y) - (a.y * b.x)};
 }
 
 // ^^^
@@ -116,7 +113,7 @@ using Colori = uint32_t;
  * @param color Color to convert to integer representation
  * @return Colori 
  */
-Colori to_colori(const Colorf& color)
+Colori to_colori(const Colorf &color)
 {
     // Colorf should always be between 0 and 1
     assert(color.x <= 1 && color.x >= 0);
@@ -126,10 +123,7 @@ Colori to_colori(const Colorf& color)
     // FIXME: Gamma correction
 
     // Convert a valid Colorf to Colori
-    return (255 << 24)
-    | ((int) std::floor(color.z * 255) << 16)
-    | ((int) std::floor(color.y * 255) << 8)
-    | (int) std::floor(color.x * 255);
+    return (255 << 24) | ((int)std::floor(color.z * 255) << 16) | ((int)std::floor(color.y * 255) << 8) | (int)std::floor(color.x * 255);
 }
 
 // ^^^
@@ -147,10 +141,20 @@ struct SphereGeometry
     Vec center;
     float radius;
 
-    bool intersect(const Ray& ray, Vec& point) const
+    bool intersect(const Ray &ray, Vec &point) const
     {
         // TODO: Calculate the point of intersection between a sphere and a ray
         //   and assign the value to the `point` parameter
+        double a = ray.direction.sqlen();
+        double b = 2 * dot(ray.origin - center, ray.direction);
+        double c = ((ray.origin - center).sqlen()) - (radius * radius);
+        double d = (b * b) - (4 * a * c);
+        if (d > 0)
+        {
+            double l = (-b - sqrt(d)) / (2 * a);
+            point = ray.origin + ray.direction * l;
+        }
+        return (d >= 0);
     }
 };
 
@@ -175,7 +179,7 @@ struct Actor
      * @param hit Output hit data
      * @return bool Indicates if the ray intersects with this actor
      */
-    bool intersect(const Ray& ray, HitResult& hit) const
+    bool intersect(const Ray &ray, HitResult &hit) const
     {
         Vec point;
         if (geometry.intersect(ray, point))

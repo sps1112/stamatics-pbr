@@ -24,11 +24,26 @@ struct Camera
     Ray get_ray(double x, double y) const
     {
         // TODO: Use the vectors u, v, w to find a ray from the camera to (x, y)
+        Ray new_ray;
+        new_ray.origin = position;
+        Vec destination = w + u * x + v * y;
+        new_ray.direction = normalize(destination - position);
+        return new_ray;
     }
 
     void calculate_basis(double aspect_ratio)
     {
         // TODO: Calculate u, v, w using look_at and aspect_ratio
+        Vec look_dir = normalize(look_at - position);
+        Vec world_up(0, 1, 0);
+        Vec camera_right = cross(look_dir, world_up);
+        Vec camera_up = cross(look_dir, camera_right);
+        double Lx, Ly;
+        Lx = tan(fov / 2.0);
+        Ly = (1 / aspect_ratio) * Lx;
+        w = position + look_dir;
+        u = (camera_right * Lx / 2.0);
+        v = (camera_up * Ly / 2.0) * (-1.0);
     }
 
 private:

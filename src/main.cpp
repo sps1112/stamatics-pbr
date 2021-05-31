@@ -18,27 +18,24 @@
 
 const std::vector<Actor> SCENE = {
     // Red ball
-    Actor {
-        Material {
-            Colorf { 1.0, 0.0, 0.0 } // Color
+    Actor{
+        Material{
+            Colorf{1.0, 0.0, 0.0} // Color
         },
-        SphereGeometry {
-            Vec { 0.0, 1.0, 0.0 },   // Position
-            1.0                      // Radius
-        }
-    },
+        SphereGeometry{
+            Vec{0.0, 1.0, 0.0}, // Position
+            1.0                 // Radius
+        }},
 
-    // Floor
-    Actor {
-        Material {
-            Colorf { 0.0, 1.0, 0.0 } // Color
+    // Green Floor
+    Actor{
+        Material{
+            Colorf{0.0, 1.0, 0.0} // Color
         },
-        SphereGeometry {
-            Vec { 0.0, -1e5, 0.0 },  // Position
-            1e5                      // Radius
-        }
-    }
-};
+        SphereGeometry{
+            Vec{0.0, -1e5, 0.0}, // Position
+            1e5                  // Radius
+        }}};
 
 /*!
  * @brief Recursively trace the ray.
@@ -48,10 +45,10 @@ const std::vector<Actor> SCENE = {
  * @param ray Ray that's being traced
  * @return Colorf Output color
  */
-Colorf trace_ray(const Ray& ray)
+Colorf trace_ray(const Ray &ray)
 {
     // Check if this ray intersects with anything in the scene
-    for (const auto& actor : SCENE)
+    for (const auto &actor : SCENE)
     {
         HitResult hit;
         if (actor.intersect(ray, hit))
@@ -60,9 +57,9 @@ Colorf trace_ray(const Ray& ray)
             return hit.color;
         }
     }
-    
+
     // If there's no intersection, return a light blue color
-    return Colorf { 0.572, 0.886, 0.992 };
+    return Colorf{0.572, 0.886, 0.992};
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -74,18 +71,19 @@ Colorf trace_ray(const Ray& ray)
 
 int main()
 {
+    std::cout << "Program Start" << std::endl;
     // Wrap the entire thing in a try-catch to catch errors
     try
     {
         // Setup the camera
         Camera camera;
-        camera.position = Vec { 0, 2, 5 };
-        camera.look_at = Vec { 0, 1, 0 }; // look at the red ball
-        camera.calculate_basis((double) COLS / ROWS); // Calculate u, v, w for the camera
+        camera.position = Vec{0, 2, 5};
+        camera.look_at = Vec{0, 1, 0};               // look at the red ball
+        camera.calculate_basis((double)COLS / ROWS); // Calculate u, v, w for the camera
 
         // The image will have ROWS * COLS number of pixels, and each pixel will have
         // one Colori for it
-        std::vector<Colori> image (ROWS * COLS);
+        std::vector<Colori> image(ROWS * COLS);
 
         // Iterate over all rows
         for (int row = 0; row < ROWS; ++row)
@@ -97,9 +95,9 @@ int main()
             {
                 // Normalize (row, col) to (x, y) where x and y are between -1 and 1.
                 // Note that row = 0 col = 0 represents (-1, -1)
-                double x = (((double) col) / COLS) * 2 - 1;
-                double y = (((double) row) / ROWS) * 2 - 1;
-                
+                double x = (((double)col) / COLS) * 2 - 1;
+                double y = (((double)row) / ROWS) * 2 - 1;
+
                 // Get the ray corresponding to (x, y)
                 Ray ray = camera.get_ray(x, y);
 
@@ -114,12 +112,12 @@ int main()
         // The stb_image_write.h file has some documentation at the top for the library,
         // but we'll only ever need the following two lines.
         stbi_flip_vertically_on_write(true);
-        stbi_write_png("out.png", COLS, ROWS, 4, image.data(), COLS * sizeof (Colori));
+        stbi_write_png("out.png", COLS, ROWS, 4, image.data(), COLS * sizeof(Colori));
 
         // Completed successfully! :)
         std::cout << "All ok!" << std::endl;
     }
-    catch (const std::exception& e)
+    catch (const std::exception &e)
     {
         // Print out an error message if caught
         std::cout << "ERROR: " << e.what() << std::endl;

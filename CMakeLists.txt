@@ -6,3 +6,10 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_executable(pbr src/main.cpp src/stb_image_write.cpp)
+
+if(WIN32)
+add_custom_command(TARGET pbr POST_BUILD   
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/dlls/libstdc++-6.dll"
+        $<TARGET_FILE_DIR:pbr>)    
+endif()
