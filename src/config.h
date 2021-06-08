@@ -7,10 +7,10 @@
 
 #define PBR_DISCRETE_SAMPLER_DIFFUSE_OFFSET 50
 
-#define PBR_GRID_SAMPLER_SIZE 8
+#define PBR_GRID_SAMPLER_SIZE 4
 
 #define PBR_ACTIVE_SAMPLER_CLASS GridSampler
-#define PBR_ACTIVE_BRDF_CLASS DiffuseBRDF
+#define PBR_ACTIVE_BRDF_CLASS PhongBRDF
 
 ///////////////////////////////////////////////////////////////////////////////
 // Scene and camera
@@ -41,7 +41,7 @@
 #define PBR_COLOR_BLUE \
     Colorf { 0.0, 0.0, 1.0 }
 
-#define PBR_BACKGROUND_COLOR PBR_COLOR_BLACK
+#define PBR_BACKGROUND_COLOR PBR_COLOR_SKYBLUE
 
 ///////////////////////////////////////////////////////////////////////////////
 // Output
