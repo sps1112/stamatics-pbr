@@ -23,8 +23,18 @@ const std::vector<Actor> SCENE = {
             Colorf{1.0, 0.0, 0.0} // Color
         },
         SphereGeometry{
-            Vec{0.0, 1.0, 0.0}, // Position
+            Vec{1.5, 1.0, 0.0}, // Position
             1.0                 // Radius
+        }},
+
+    // Blue ball
+    Actor{
+        Material{
+            Colorf{0.0, 0.0, 1.0} // Color
+        },
+        SphereGeometry{
+            Vec{-1.5, 1.0, 0.0}, // Position
+            1.0                  // Radius
         }},
 
     // Green Floor
