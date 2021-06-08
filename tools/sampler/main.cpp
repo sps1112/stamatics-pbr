@@ -13,10 +13,10 @@ static int get_index(int row, int col)
     return row * IMAGE_WIDTH + col;
 }
 
-static void draw_around_pixel(Image& image, int row, int col)
+static void draw_around_pixel(Image &image, int row, int col)
 {
     static constexpr int POINT_HALF_SIDE = 2;
-    
+
     // Make sure the cursor stays in bounds both vertically and horizontally
     int hstart = std::max(0, col - POINT_HALF_SIDE);
     int hend = std::min(IMAGE_WIDTH - 1, col + POINT_HALF_SIDE);
@@ -47,14 +47,14 @@ int main(void)
 
     auto points = sample_unit_circle(NUM_SAMPLER);
 
-    for (const auto& point : points)
+    for (const auto &point : points)
     {
         int col = RADIUS * point.x + (IMAGE_WIDTH / 2);
         int row = RADIUS * point.y + (IMAGE_HEIGHT / 2);
         draw_around_pixel(image, row, col);
     }
 
-    stbi_write_png("sampler.png", IMAGE_WIDTH, IMAGE_HEIGHT, 4, image.data(), IMAGE_WIDTH * sizeof (uint32_t));
+    stbi_write_png("sampler.png", IMAGE_WIDTH, IMAGE_HEIGHT, 4, image.data(), IMAGE_WIDTH * sizeof(uint32_t));
 
     return 0;
 }
