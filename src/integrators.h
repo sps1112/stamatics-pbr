@@ -49,14 +49,64 @@ struct DiscreteSampler
 //   the sampled rays.
 struct GridSampler
 {
+    /*
+        Dimensions:-
+        1. Length of half-diagonal = 1 ==> half_side
+        2. Length of diagonal = 2
+        3. Length of side = 2/sqrt(3)
+        4. Length of half side = 1/sqrt(3)
+        5. Number of Subdivisions = PBR_GRID_SAMPLER_SIZE
+        6. Length of side of smaller cube = 2/{sqrt(3)*PBR_GRID_SAMPLER_SIZE} ==> h
+    */
     // weight = h^3 where h is the side of an element of the grid
-    const double weight = PBR_GRID_SAMPLER_SIZE * PBR_GRID_SAMPLER_SIZE * PBR_GRID_SAMPLER_SIZE; // TODO: calculate the weight
+    const double weight = std::pow(2.0 / (PBR_GRID_SAMPLER_SIZE * std::sqrt(3)), 3.0);
 
     // NOTE: in is w.r.t. rays from the camera
     std::vector<Ray> operator()(const Ray &in, const HitResult &hit) const
     {
-        // TODO: Create a grid
-        return {Ray{}};
+        const Vec center = hit.point;
+        const double half_side = 1.0 / std::sqrt(3);
+        const double h = 2.0 / (PBR_GRID_SAMPLER_SIZE * std::sqrt(3));
+
+        // Stores the 8 rays from the center to the vertices on the Cube.
+        std::vector<Ray> result(8);
+        for (short i = 0; i < 8; ++i)
+        {
+            // Add + or - half_side to each component
+            int kx = (i == 2 || i == 3 || i == 4 || i == 7) ? -1 : 1;
+            int ky = (i >= 4) ? -1 : 1;
+            int kz = (i == 1 || i == 2 || i == 6 || i == 7) ? -1 : 1;
+
+            result[i].origin = center;
+            result[i].direction.x = kx * half_side;
+            result[i].direction.y = ky * half_side;
+            result[i].direction.z = kz * half_side;
+        }
+
+        // Three cube edges as basis (Length = 2 * half_side)
+        const Vec AB = result[1].direction - result[0].direction;
+        const Vec AD = result[3].direction - result[0].direction;
+        const Vec AF = result[5].direction - result[0].direction;
+
+        for (size_t i = 1; i < PBR_GRID_SAMPLER_SIZE; ++i)
+        {
+            for (size_t j = 1; j < PBR_GRID_SAMPLER_SIZE; ++j)
+            {
+                for (size_t k = 1; k < PBR_GRID_SAMPLER_SIZE; ++k)
+                {
+                    // Subdivide cube
+                    Vec dir = AB * h * i + AD * h * j + AF * h * k + result[0].direction;
+
+                    // Push ray to result
+                    Ray ray{};
+                    ray.direction = normalize(dir);
+                    ray.origin = center;
+                    result.push_back(ray);
+                }
+            }
+        }
+
+        return result;
     }
 };
 
